@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: todo_example:${TODO_EXAMPLE_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    labels:
+      # Enables traefik for this container.
+    - traefik.enable=true
+    - traefik.http.routers.todo_example.rule=Host(`${TODO_EXAMPLE_TRAEFIK_HOST:-todo_example.localhost}`)
+    - traefik.http.routers.todo_example.entrypoints=http
+    - traefik.http.routers.todo_example.service=todo_example
+    - traefik.http.services.todo_example.loadbalancer.server.port=${TODO_EXAMPLE_PORT:-8000}
+    networks:
+    - default
+    - traefik-shared
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TODO_EXAMPLE_HOST: 0.0.0.0
+      TODO_EXAMPLE_DB_HOST: todo_example-db
+      TODO_EXAMPLE_DB_PORT: 5432
+      TODO_EXAMPLE_DB_USER: todo_example
+      TODO_EXAMPLE_DB_PASS: todo_example
+      TODO_EXAMPLE_DB_BASE: todo_example
+
+  db:
+    image: postgres:13.8-bullseye
+    hostname: todo_example-db
+    environment:
+      POSTGRES_PASSWORD: "todo_example"
+      POSTGRES_USER: "todo_example"
+      POSTGRES_DB: "todo_example"
+    volumes:
+    - todo_example-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U todo_example
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrator:
+    image: todo_example:${TODO_EXAMPLE_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      TODO_EXAMPLE_DB_HOST: todo_example-db
+      TODO_EXAMPLE_DB_PORT: 5432
+      TODO_EXAMPLE_DB_USER: todo_example
+      TODO_EXAMPLE_DB_PASS: todo_example
+      TODO_EXAMPLE_DB_BASE: todo_example
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+
+volumes:
+  todo_example-db-data:
+    name: todo_example-db-data
+
+networks:
+  # Network for traefik.
+  traefik-shared:
+    name: traefik-shared
