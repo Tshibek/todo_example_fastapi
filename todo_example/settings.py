@@ -46,6 +46,18 @@ class Settings(BaseSettings):
     db_base: str = "todo_example"
     db_echo: bool = False
 
+    expiration_access_token: int = 60
+    expiration_refresh_token: int = 43200
+    expiration_access_token_max_age: int = expiration_access_token * 60
+    expiration_refresh_token_max_age: int = expiration_refresh_token * 60
+    max_login_attempts: int = 5
+    lockout_duration_minutes: int = 10
+    refresh_token_count: int = 0
+    max_refresh_token_count: int = 10
+
+    private_key_pem: bytes = b"-----BEGIN PRIVATE KEY-----\nMC4CAQAwBQYDK2VwBCIEILTL+0PfTOIQcn2VPkpxMwf6Gbt9n4UEFDjZ4RuUKjd0\n-----END PRIVATE KEY-----"
+    public_key_pem: bytes = b"-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAHrnbu7wEfAP9cGBOAHHwmH4Wsot1ciXBHwBBXQ4gsaI=\n-----END PUBLIC KEY-----"
+
     @property
     def db_url(self) -> URL:
         """

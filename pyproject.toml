@@ -15,7 +15,7 @@ python = "^3.9"
 fastapi = "^0.100.0"
 uvicorn = { version = "^0.22.0", extras = ["standard"] }
 gunicorn = "^21.2.0"
-pydantic = "^2"
+pydantic = {extras = ["email"], version = "^2.4.2"}
 pydantic-settings = "^2"
 yarl = "^1.9.2"
 ujson = "^5.8.0"
@@ -24,11 +24,16 @@ alembic = "^1.11.1"
 asyncpg = {version = "^0.28.0", extras = ["sa"]}
 httptools = "^0.6.0"
 loguru = "^0.7.0"
+passlib = "^1.7.4"
+argon2-cffi = "^23.1.0"
+pyseto = "^1.7.5"
+python-multipart = "^0.0.6"
+
 
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.1"
-flake8 = "~4.0.1"
+ruff = "^0.1.0"
 mypy = "^1.1.1"
 isort = "^5.11.4"
 pre-commit = "^3.0.1"
@@ -39,6 +44,65 @@ pytest-cov = "^4.0.0"
 anyio = "^3.6.2"
 pytest-env = "^0.8.1"
 httpx = "^0.23.3"
+
+[tool.ruff]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+select = ["E4", "E7", "E9", "F"]
+ignore = []
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "./.cache",
+  "./.git",
+  "./.idea",
+  "./.mypy_cache",
+  "./.pytest_cache",
+
+  "./cached_venv",
+  "./docs",
+  "./deploy",
+  "./var",
+  "./.vscode",
+  "*migrations*",
+]
+# Same as Black.
+line-length = 88
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.8
+target-version = "py39"
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
 
 [tool.isort]
 profile = "black"
@@ -94,6 +158,9 @@ gunicorn = "True"
 add_users = "None"
 cookie_auth = "None"
 jwt_auth = "None"
+
+
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

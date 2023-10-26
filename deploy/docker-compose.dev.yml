@@ -13,3 +13,7 @@ services:
     environment:
       # Enables autoreload.
       TODO_EXAMPLE_RELOAD: "True"
+
+  db:
+    ports:
+    - "5432:5432"
